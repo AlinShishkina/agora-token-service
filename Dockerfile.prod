@@ -1,0 +1,70 @@
+# ============================================
+# Этап 1: Builder
+# ============================================
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+
+# Установка зависимостей для сборки
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Создание виртуального окружения
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Копирование и установка зависимостей
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir gunicorn uvicorn && \
+    pip install --no-cache-dir -r requirements.txt
+
+# ============================================
+# Этап 2: Runtime
+# ============================================
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Копирование виртуального окружения из builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Установка runtime зависимостей
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Создание пользователя
+RUN groupadd -r appuser && useradd -r -g appuser -u 1000 appuser
+
+# Создание директорий
+RUN mkdir -p /app/logs && chown -R appuser:appuser /app
+
+# Копирование кода
+COPY --chown=appuser:appuser app/ ./app/
+COPY --chown=appuser:appuser *.py ./
+
+USER appuser
+
+# Health check (используем порт 8000 внутри контейнера)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+EXPOSE 8000
+
+# Запуск с gunicorn (слушаем на 8000 внутри контейнера)
+CMD ["gunicorn", \
+    "app.main:app", \
+    "--workers", "4", \
+    "--worker-class", "uvicorn.workers.UvicornWorker", \
+    "--bind", "0.0.0.0:8000", \
+    "--timeout", "120", \
+    "--access-logfile", "-", \
+    "--error-logfile", "-", \
+    "--log-level", "info"]

@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: agora-postgres-prod
+    environment:
+      POSTGRES_DB: ${DB_NAME:-agora_production}
+      POSTGRES_USER: ${DB_USER:-agora_prod_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-agora_password}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=C"
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=768MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-agora_prod_user} -d ${DB_NAME:-agora_production}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    networks:
+      - agora-network-prod
+
+  redis:
+    image: redis:7-alpine
+    container_name: agora-redis-prod
+    # тут костыль, но по возможности решу
+    command: redis-server --requirepass "Wb_Sync2024!" 
+    ports:
+      - "6380:6379"
+    healthcheck:
+    # тут костыль, но по возможности решу
+      test: ["CMD", "redis-cli", "-a", "Wb_Sync2024!", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: always
+    networks:
+      - agora-network-prod
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: agora-api-prod
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env.prod
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PORT: 8000
+      # тут костыль, но по возможности решу
+      REDIS_PASSWORD: "Wb_Sync2024!" 
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: always
+    networks:
+      - agora-network-prod
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+volumes:
+  postgres_data_prod:
+    driver: local
+
+networks:
+  agora-network-prod:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
