@@ -120,7 +120,7 @@ Swagger UI: `http://localhost:8001/docs`
 
 ### Аутентификация
 ```
-POST /api/simple
+POST /api/auth
 ```
 **Header:** `X-User-Id: <user_id>`
 
