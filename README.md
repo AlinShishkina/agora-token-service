@@ -183,7 +183,7 @@ GET /healthcheck
 
 ## Postman Коллекция
 
-Скачайте полную коллекцию: [Agora Token Service.postman_collection.json](https://web.postman.co/workspace/My-Workspace~918906d3-d116-4030-8f3a-bec45c62fcf0/collection/39461817-008ae5bf-b231-4f7d-86d1-03e8a1dd2f3c?action=share&source=copy-link&creator=39461817)
+Полная коллекция Postman: [Agora Token Service.postman_collection.json](https://web.postman.co/workspace/My-Workspace~918906d3-d116-4030-8f3a-bec45c62fcf0/collection/39461817-008ae5bf-b231-4f7d-86d1-03e8a1dd2f3c?action=share&source=copy-link&creator=39461817). Сам файл коллекции дополнительно помещен в проект.
 
 
 **Переменные окружения:**
