@@ -10,19 +10,17 @@ from app.utils.security import validate_user_id
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-
 @router.post(
     "/auth",
     response_model=schemas.AuthResponse,
-    summary="Simple authentication",
-    description="Simple authentication using X-User-Id header"
+    summary="User authentication",
+    description="Authentication using X-User-Id header"
 )
-async def simple_auth(
+async def auth_endpoint(
     x_user_id: str = Header(..., alias="X-User-Id"),
     db: Session = Depends(get_db)
 ):
-    
-   # аутентификация по заголовку X-User-Id
+    # аутентификация по заголовку X-User-Id
     try:
         logger.info(f"User authentication attempt: {x_user_id}")
         

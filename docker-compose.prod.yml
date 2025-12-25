@@ -33,12 +33,12 @@ services:
     image: redis:7-alpine
     container_name: agora-redis-prod
     # тут костыль, но по возможности решу
-    command: redis-server --requirepass "Wb_Sync2024!" 
+    command: redis-server --requirepass "{REDIS_PASSWORD}" 
     ports:
       - "6380:6379"
     healthcheck:
     # тут костыль, но по возможности решу
-      test: ["CMD", "redis-cli", "-a", "Wb_Sync2024!", "ping"]
+      test: ["CMD", "redis-cli", "-a", "{REDIS_PASSWORD}", "ping"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -63,7 +63,7 @@ services:
       REDIS_PORT: 6379
       PORT: 8000
       # тут костыль, но по возможности решу
-      REDIS_PASSWORD: "Wb_Sync2024!" 
+      REDIS_PASSWORD: "{REDIS_PASSWORD}" 
     depends_on:
       postgres:
         condition: service_healthy

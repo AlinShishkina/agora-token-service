@@ -147,6 +147,7 @@ try:
     from app.routers.rooms import router as rooms_router
     from app.routers.health import router as health_router
     
+    # пдключение роутеров
     app.include_router(auth_router, prefix="/api", tags=["Authentication"])
     app.include_router(tokens_router, prefix="/api/tokens", tags=["Tokens"])
     app.include_router(rooms_router, prefix="/api/rooms", tags=["Rooms"])

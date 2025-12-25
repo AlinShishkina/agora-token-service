@@ -29,7 +29,7 @@ curl -s -I "$API_URL/docs" | head -1
 curl -s -w "Code: %{http_code}\n" "$API_URL/docs" | tail -1 | grep "200" && { log_success "Docs OK"; PASSED=$((PASSED+1)); } || { log_error "Docs FAILED"; FAILED=$((FAILED+1)); }
 echo
 
-log_info "3. Simple Auth:"
+log_info "3. Auth Check:"
 result=$(curl -s -w "Code: %{http_code}\n" \
   -H "X-User-Id: $TEST_USER_ID" \
   -H "Content-Type: application/json" \

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 API_URL="http://localhost:8001"
 
 echo " Проверка API Agora Token Service"
