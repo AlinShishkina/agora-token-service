@@ -1,0 +1,66 @@
+{
+  "info": {
+    "name": "Agora Token Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8001" },
+    { "key": "user_id", "value": "test_user_123" },
+    { "key": "channel", "value": "test_channel" },
+    { "key": "uid", "value": "123456" }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] } }
+    },
+    {
+      "name": "Docs",
+      "request": { "method": "GET", "header": [], "url": { "raw": "{{base_url}}/docs", "host": ["{{base_url}}"], "path": ["docs"] } }
+    },
+    {
+      "name": "Simple Auth",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "X-User-Id", "value": "{{user_id}}" }, { "key": "Content-Type", "value": "application/json" } ],
+        "url": { "raw": "{{base_url}}/api/auth", "host": ["{{base_url}}"], "path": ["api", "simple"] }
+      }
+    },
+    {
+      "name": "Create Room",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "X-User-Id", "value": "{{user_id}}" }, { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\"name\": \"Test Room\", \"is_private\": false, \"max_participants\": 10}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{base_url}}/api/rooms/", "host": ["{{base_url}}"], "path": ["api", "rooms", ""] }
+      }
+    },
+    {
+      "name": "RTC Token",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "X-User-Id", "value": "{{user_id}}" }, { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\"channel\": \"{{channel}}\", \"uid\": \"{{uid}}\", \"role\": \"host\"}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{base_url}}/api/tokens/rtc", "host": ["{{base_url}}"], "path": ["api", "tokens", "rtc"] }
+      }
+    },
+    {
+      "name": "RTM Token",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "X-User-Id", "value": "{{user_id}}" }, { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\"uid\": \"{{uid}}\"}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{base_url}}/api/tokens/rtm", "host": ["{{base_url}}"], "path": ["api", "tokens", "rtm"] }
+      }
+    },
+    {
+      "name": "Dual Tokens",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "X-User-Id", "value": "{{user_id}}" }, { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\"channel\": \"{{channel}}\", \"uid\": \"{{uid}}\", \"role\": \"host\"}", "options": { "raw": { "language": "json" } } },
+        "url": { "raw": "{{base_url}}/api/tokens/dual", "host": ["{{base_url}}"], "path": ["api", "tokens", "dual"] }
+      }
+    }
+  ]
+}
